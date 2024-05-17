@@ -1,0 +1,306 @@
+<?php
+require_once __DIR__ . '/../services/dotenv.php';
+require_once 'log.php';
+
+class Helper {
+    const ALERT_PRIMARY = 'primary';
+    const ALERT_SECONDARY = 'secondary';
+    const ALERT_SUCCESS = 'success';
+    const ALERT_DANGER = 'danger';
+    const ALERT_WARNING = 'warning';
+    const ALERT_INFO = 'info';
+    const ALERT_LIGHT = 'light';
+    const ALERT_DARK = 'dark';
+    /**
+     * https://getbootstrap.com/docs/5.3/components/alerts/
+     * @param 'primary'|'secondary'|'success'|'danger'|'warning'|'info'|'light'|'dark' $type
+     */
+    public static function send_alert(string $msg, string $type = Helper::ALERT_WARNING, int $time = 30000) {
+        ?>
+            <script>
+                sendAlert(type = '<?php echo $type ?>', msg = '<?php echo $msg ?>', time = <?php echo $time ?>);
+            </script>
+        <?php
+        /*
+        ?>
+            <div class="alert alert-dismissible d-flex align-items-center alert-<?php echo $type ?>" role="alert">
+                <?php
+                    if ($type === 'success') {
+                        echo '<svg class="bi flex-shrink-0 me-2" width="25" height="25" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>';
+                    } else if ($type === 'danger') {
+                        echo '<svg class="bi flex-shrink-0 me-2" width="25" height="25" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>';
+                    } else if ($type === 'warning') {
+                        echo '<svg class="bi flex-shrink-0 me-2" width="25" height="25" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>';
+                    } else {
+                        echo '<svg class="bi flex-shrink-0 me-2" width="25" height="25" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>';
+                    }
+                ?>
+                <div><?php echo $msg ?></div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php
+        */
+    }
+    public static function array_find(array $arr, $func) {
+        foreach ($arr as $i) {
+            if ($func($i)) return $i;
+        }
+        return null;
+    }
+    public static function array_find_index(array $arr, $func): int|false {
+        foreach ($arr as $index => $i) {
+            if ($func($i)) return $index;
+        }
+        return false;
+    }
+    public static function gen_uuid() {
+        return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            // 32 bits for "time_low"
+            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+    
+            // 16 bits for "time_mid"
+            mt_rand( 0, 0xffff ),
+    
+            // 16 bits for "time_hi_and_version",
+            // four most significant bits holds version number 4
+            mt_rand( 0, 0x0fff ) | 0x4000,
+    
+            // 16 bits, 8 bits for "clk_seq_hi_res",
+            // 8 bits for "clk_seq_low",
+            // two most significant bits holds zero and one for variant DCE1.1
+            mt_rand( 0, 0x3fff ) | 0x8000,
+    
+            // 48 bits for "node"
+            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+        );
+    }
+
+    /**
+     * return true if null or ""
+     */
+    public static function isNullOrEmpty(mixed $var): bool {
+        return is_null($var) || $var === '';
+    }
+
+    /**
+     * @param string $type string|int|float|bool
+     */
+    public static function castValue($value, string $type) {
+        if ($value === 'null') $value = null;
+        if ($type === 'bool' || $type === 'boolean') {
+            if (is_string($value)) {
+                if (empty($value)) return false;
+                if (preg_match('/^(0|null|off|false)$/i', $value)) return false;
+                return true;
+                // if (preg_match('/^(1|on|true)$/i', $value)) return true;
+            }
+            return (bool) $value;
+        }
+        if ($value === null) return $value;
+        if ($type === 'int') return (int) $value;
+        if ($type === 'float') return (float) $value;
+        if ($type === 'datetime' || $type === 'DateTime') {
+            if ($value instanceof DateTime) return $value;
+            if ($value instanceof DateTimeImmutable) return $value;
+            if (gettype($value) !== 'string') return null;
+            if (strlen($value) < 10) return null;
+            $time = strtotime($value);
+            if ($time === false) return null;
+            $date = new DateTime();
+            $date->setTimestamp($time);
+            return $date;
+            // if (strlen($value) === 10) return DateTime::createFromFormat('Y-m-d|', $value) ?: null;
+            // return DateTime::createFromFormat('Y-m-d H:i:s.u', $value) ?: null;
+        }
+        else return $value;
+    }
+
+    public static function strToFileSize(string $str): int {
+        preg_match('/(\d+(?:\.\d+)?)\s*([KMG]?B)/i', $str, $matches);
+
+        $number = (float)$matches[1];
+        $unit = strtoupper($matches[2]);
+
+        switch ($unit) {
+            case 'KB':
+                return (int) $number * 1024;
+            case 'MB':
+                return (int) $number * 1024 * 1024;
+            case 'GB':
+                return (int) $number * 1024 * 1024 * 1024;
+            default:
+                return (int) $number;
+        }
+    }
+
+    public static function is_builtin_class($className) {
+        if (!class_exists($className)) return false;
+
+        if ($className === 'DateTime' ||
+            $className === 'DateTimeImmutable' ||
+            $className === 'DateTimeZone' ||
+            $className === 'DateInterval' ||
+            $className === 'DateTimeInterface' ||
+            $className === 'PDO' ||
+            $className === 'PDOStatement' ||
+            $className === 'Exception' ||
+            $className === 'SplFileObject' ||
+            $className === 'SimpleXMLElement' ||
+            $className === 'DOMDocument' ||
+            $className === 'DOMXPath' ||
+            $className === 'JsonSerializable' ||
+            $className === 'ArrayObject' ||
+            $className === 'DirectoryIterator' ||
+            $className === 'ReflectionClass'
+        ) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    /**
+     * @param string[] $patterns
+     */
+    public static function validadeStr(string $value, array $patterns): bool {
+        foreach ($patterns as $pattern) {
+            if (strcasecmp($pattern, 'cpf') === 0) {
+                if (preg_match('/^[0-9]{3}\.?[0-9]{3}\.?[0-9]{3}-?[0-9]{2}$/', $value)) return true;
+            } else if (strcasecmp($pattern, 'cnpj') === 0) {
+                if (preg_match('/^[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}\/?[0-9]{4}-?[0-9]{2}$/', $value)) return true;
+            } else if (strcasecmp($pattern, 'phone') === 0) {
+                if (preg_match('/^(\+[0-9]{1,3} *)?\(?[0-9]{2}\)? *[0-9]{4,5}( *|-)[0-9]{4}$/', $value)) return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static function randomStr(string $start = '', int $length = 3) {
+        $string = $start;
+
+        for ($i = 0; $i < $length; $i++) {
+            $string .= chr(mt_rand(65, 90)); // Intervalo de caracteres ASCII de A-Z
+        }
+
+        return $string;
+    }
+
+    public static function appRootPath(string $path = '') {
+        $root = preg_replace('/(\/|\\\\)src(\/|\\\\)services$/', '', __DIR__);
+
+        if (empty($path)) return $root;
+        return $root . '/' . preg_replace('/^(\\\|\\/)/', '', $path);
+    }
+
+    public static function uriRoot(string $uri = '/'): string {
+        $start = preg_match('/^\/sappr\//', $_SERVER["REQUEST_URI"]) ? '/sappr' : '';
+
+        return preg_replace('/(\/|\\\)+/', '/', $start . '/' . $uri);
+    }
+
+    public static function uriLogin(): string {
+        return Helper::uriRoot('/login');
+    }
+
+    public static function apiPath(string $uri = '/'): string {
+        return Helper::uriRoot("/api/v1/{$uri}");
+    }
+
+    public static function storagePath(string $path = ''): string {
+        $storage_path = getenv('storage_path') ?: (preg_replace('/src\\\\services$/', '', __DIR__) . 'storage');
+
+        if (strlen($path) === 0) return $storage_path;
+
+        if (preg_match('/^\\\/', $path)) return $storage_path . $path;
+
+        return $storage_path . '\\' . $path;
+    }
+
+    public static function pathExistsCreate(string $path) {
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
+    }
+
+    /**
+     * Parses GET and POST form input like $_GET and $_POST, but without requiring multiple select inputs to end the name
+     * in a pair of brackets.
+     * 
+     * @param  string $method      The input method to use 'GET' or 'POST'.
+     * @param  string $querystring A custom form input in the query string format.
+     * @return array  $output      Returns an array containing the input keys and values.
+     */
+    public static function bracketless_input( $method, $querystring=null ) {
+        // Create empty array to 
+        $output = array();
+        // Get query string from function call
+        if( $querystring !== null ) {
+            $query = $querystring;
+        // Get raw POST data
+        } elseif ($method == 'POST') {
+            $query = file_get_contents('php://input');
+        // Get raw GET data
+        } elseif ($method == 'GET') {
+            $query = $_SERVER['QUERY_STRING'];
+        }
+        // Separerate each parameter into key value pairs
+        if (!empty($query)) {
+            foreach( explode( '&', $query ) as $params ) {
+                $parts = explode( '=', $params );
+                // Remove any existing brackets and clean up key and value
+                $parts[0] = trim(preg_replace( '(\%5B|\%5D|[\[\]])', '', $parts[0] ) );
+                $parts[0] = preg_replace( '([^0-9a-zA-Z])', '_', urldecode($parts[0]) );
+                $parts[1] = urldecode($parts[1]);
+                // Create new key in $output array if param does not exist.
+                if( !key_exists( $parts[0], $output ) ) {
+                    $output[$parts[0]] = $parts[1];
+                // Add param to array if param key already exists in $output
+                } elseif( is_array( $output[$parts[0]] ) ) {
+                    array_push( $output[$parts[0]], $parts[1] );
+                    // Otherwise turn $output param into array and append current param
+                } else {
+                    $output[$parts[0]] = array( $output[$parts[0]], $parts[1] );
+                }
+            }
+        }
+        return $output;
+    }
+}
+
+/* =====================================================================================================================================
+ *	Funções de CHARSET para gravação e exibição em tela (UTF8)
+* =====================================================================================================================================
+*/
+
+// if (!function_exists('encodeTexto')){
+// 	function encodeTexto($texto){
+// 		return utf8_encode($texto);
+// 		return $texto;
+// 	}
+// }
+
+// if (!function_exists('decodeTexto')){
+// 	function decodeTexto($texto){
+// 		return utf8_decode($texto);
+// 		return $texto;
+// 	}
+// }
+
+// if (!function_exists('encodeTextoAjax')){
+// 	function encodeTextoAjax($texto){
+// 		return utf8_encode($texto);
+// 	}
+// }
+
+// if (!function_exists('decodeTextoAjax')){
+// 	function decodeTextoAjax($texto){
+// 		return utf8_decode($texto);
+// 	}
+// }
+
+// if (!function_exists('decodeTextoPDF')){
+// 	function decodeTextoPDF($texto){
+// 		return utf8_encode(utf8_decode($texto));
+// 	}
+// }
