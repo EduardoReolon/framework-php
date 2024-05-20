@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/../../services/dotenv.php';
-
 class Database {
     private static $instance;
     private $connection;
@@ -12,11 +10,11 @@ class Database {
     private $db_password;
     
     private function __construct() {
-        $this->db_driver = __SGBD_PRETENDENTES_DRIVER__ ?: getenv('db_driver');
-        $this->db_host = __SGBD_PRETENDENTES_SERVER__ ?: getenv('db_host');
-        $this->db_name = __SGBD_PRETENDENTES_DB__ ?: getenv('db_name');
-        $this->db_user = __SGBD_PRETENDENTES_USER__ ?: getenv('db_user');
-        $this->db_password = __SGBD_PRETENDENTES_PASS__ ?: getenv('db_password');
+        $this->db_driver = __SGBD_DRIVER__;
+        $this->db_host = __SGBD_SERVER__;
+        $this->db_name = __SGBD_DB__;
+        $this->db_user = __SGBD_USER__;
+        $this->db_password = __SGBD_PASS__;
 
         $dsn = $this->db_driver . ":Server=" . $this->db_host . ";Database=" . $this->db_name . '; Encrypt=false; TrustServerCertificate=yes;';
         try {

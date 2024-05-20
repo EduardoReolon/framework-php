@@ -4,6 +4,7 @@ require_once 'view_core.php';
 
 class View_main extends View_core {
     private function body_start() {
+        $uri = Helper::getCurrentUri();
         ?>
                 <style>
                     body {
@@ -35,11 +36,8 @@ class View_main extends View_core {
                         <nav class="collapse d-lg-block sidebar collapse bg-white">
                             <div class="position-sticky">
                                 <div class="list-group list-group-flush mx-3 mt-4">
-                                    <a href="<?php echo Helper::uriRoot('/') ?>" class="list-group-item list-group-item-action py-2 ripple<?php echo preg_match('/^\/(sappr(\/)?(public)?)?$/', $this->uri) ? ' active' : ''; ?>" aria-current="true">
+                                    <a href="<?php echo Helper::uriRoot('/') ?>" class="list-group-item list-group-item-action py-2 ripple<?php echo $uri === '/' ? ' active' : ''; ?>" aria-current="true">
                                         <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Página inicial</span>
-                                    </a>
-                                    <a href="<?php echo Helper::uriRoot('/demandas') ?>" class="list-group-item list-group-item-action py-2 ripple<?php echo preg_match('/^\/(sappr\/(public\/)?)?demandas$/', $this->uri) ? ' active' : ''; ?>">
-                                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Demandas</span>
                                     </a>
                                 </div>
                             </div>

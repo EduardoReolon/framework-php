@@ -140,19 +140,24 @@ class Entity {
      * @return static[]
      */
     public static function fetch($query): array {
-        new self();
-        $resultados = $query->execQuery(self::$db);
-
-        $entidades = [];
-
-        foreach ($resultados as $registro) {
-            // Criar uma instância da classe Entity para cada registro
-            $entidade = new static();
-            $entidade->setProperties($registro); // Método para definir as propriedades da classe Entity
-            $entidades[] = $entidade;
+        try {
+            new self();
+            $resultados = $query->execQuery(self::$db);
+    
+            $entidades = [];
+    
+            foreach ($resultados as $registro) {
+                // Criar uma instância da classe Entity para cada registro
+                $entidade = new static();
+                $entidade->setProperties($registro); // Método para definir as propriedades da classe Entity
+                $entidades[] = $entidade;
+            }
+    
+            return $entidades;
+        } catch (\Throwable $th) {
+            Log::new(Log::TYPE_ERROR)->setThrowable($th);
+            return [];
         }
-
-        return $entidades;
     }
 
     /**

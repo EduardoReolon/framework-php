@@ -7,6 +7,7 @@ class Auth_controller extends Base_controller {
      * @request
      * map /
      * method post
+     * no_auth
      */
     static public function login(Login_request $request, Http_response $response) {
         if (!isset($request->username) || !isset($request->password)) {

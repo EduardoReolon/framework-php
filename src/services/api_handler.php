@@ -68,6 +68,7 @@ class Api_handler {
         $response = new Http_response();
         foreach ($this->routeMapping as $map) {
             if ($map->match($this->routeRequested, $this->methodRequested)) {
+                if ($map->auth_required) Auth::verificarAutenticacao();
                 $map->invoke($response);
                 return;
             }

@@ -55,7 +55,7 @@ class Auth {
     
     private static function token_get_data(string $token) {
         try {
-            return JWT::decode($token, __JWT_SECRET__ ?: getenv('JWT_secret'), ['HS256']);
+            return JWT::decode($token, __JWT_SECRET__, ['HS256']);
         } catch (\Throwable $th) {
             //throw $th;
             return false;
@@ -108,7 +108,7 @@ class Auth {
     
         $payload['exp'] = time() + (15 * 60); // 15 minutos em segundos
     
-        return JWT::encode($payload, __JWT_SECRET__ ?: getenv('JWT_secret'), 'HS256');
+        return JWT::encode($payload, __JWT_SECRET__, 'HS256');
     }
     
     public static function refresh_token(User $user = null, string $old_refresh_token = null) {

@@ -32,6 +32,7 @@ class Parameter implements JsonSerializable {
 class Route_map implements JsonSerializable {
     /** @var string[] */
     private array $map = [];
+    public bool $auth_required = true;
     /** @var 'post'|'patch'|'delete'[] lowercased */
     private array $http_methods = [];
     private string $name;
@@ -68,6 +69,8 @@ class Route_map implements JsonSerializable {
                     if (!empty($valor)) $this->map = array_merge($this->map, explode("/", preg_replace('/^\/(.*)/', '$1', $valor)));
                 } else if (preg_match('/(http)?.*method/i', $chave)) {
                     if (!empty($valor)) $this->http_methods[] = strtolower($valor);
+                } else if (preg_match('/no_auth/i', $chave)) {
+                    $this->auth_required = false;
                 }
             }
         }

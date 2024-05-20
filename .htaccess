@@ -4,7 +4,4 @@ AddDefaultCharset UTF-8
 # RewriteCond %{HTTP_HOST} ^(www.)?.*$
 # RewriteRule ^(/)?$ public [L]
 
-RewriteCond %{REQUEST_URI} ^/?(sappr/)?logs(\/.*)?$ [NC]
-RewriteRule . - [L]
-
 RewriteRule ^(.*)$ public/$1 [L]

@@ -1,5 +1,4 @@
 <?php
-require_once 'dotenv.php';
 require_once __DIR__ . '/../models/config/entity.php';
 require_once('auth.php');
 
@@ -32,13 +31,12 @@ Class Log {
         $log = new self();
         $log->type = $type;
 
-        $log->path = getenv('logs_' . $type . '_folder');
-        if (empty($log->path)) {
-            $log_root_folder = getenv('logs_folder');
-            if (empty($log_root_folder)) $log_root_folder = realpath(__DIR__ . '/../../') . '/logs/';
-            else if (substr($log_root_folder, -1) !== '/') $log_root_folder .= '/';
-            $log->path = $log_root_folder . $type;
+        if (!defined('__LOGS_ROOT_FOLDER__')) {
+            define('__LOGS_ROOT_FOLDER__', realpath(__DIR__ . '/../../') . '/logs/');
         }
+        $logs_root_folder = __LOGS_ROOT_FOLDER__;
+        if (substr($logs_root_folder, -1) !== '/') $logs_root_folder .= '/';
+        $log->path = $logs_root_folder . $type;
 
         return $log;
     }

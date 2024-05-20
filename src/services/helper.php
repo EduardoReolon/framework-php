@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../services/dotenv.php';
 require_once 'log.php';
 
 class Helper {
@@ -21,25 +20,6 @@ class Helper {
                 sendAlert(type = '<?php echo $type ?>', msg = '<?php echo $msg ?>', time = <?php echo $time ?>);
             </script>
         <?php
-        /*
-        ?>
-            <div class="alert alert-dismissible d-flex align-items-center alert-<?php echo $type ?>" role="alert">
-                <?php
-                    if ($type === 'success') {
-                        echo '<svg class="bi flex-shrink-0 me-2" width="25" height="25" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>';
-                    } else if ($type === 'danger') {
-                        echo '<svg class="bi flex-shrink-0 me-2" width="25" height="25" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>';
-                    } else if ($type === 'warning') {
-                        echo '<svg class="bi flex-shrink-0 me-2" width="25" height="25" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>';
-                    } else {
-                        echo '<svg class="bi flex-shrink-0 me-2" width="25" height="25" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>';
-                    }
-                ?>
-                <div><?php echo $msg ?></div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <?php
-        */
     }
     public static function array_find(array $arr, $func) {
         foreach ($arr as $i) {
@@ -194,9 +174,18 @@ class Helper {
     }
 
     public static function uriRoot(string $uri = '/'): string {
-        $start = preg_match('/^\/sappr\//', $_SERVER["REQUEST_URI"]) ? '/sappr' : '';
+        preg_match('/^\/(sappr\/)*/', $_SERVER["REQUEST_URI"], $match);
 
-        return preg_replace('/(\/|\\\)+/', '/', $start . '/' . $uri);
+        return preg_replace('/(\/|\\\)+/', '/', $match[0] . '/' . $uri);
+    }
+
+    public static function getCurrentUri(): string {
+        $uri = strtok($_SERVER["REQUEST_URI"], '?');
+        $uri = preg_replace('/^\/((sappr\/)*(public)?)?/', '/', $uri);
+
+        if ($uri === '/') return $uri;
+
+        return rtrim($uri, '/');
     }
 
     public static function uriLogin(): string {
@@ -208,7 +197,8 @@ class Helper {
     }
 
     public static function storagePath(string $path = ''): string {
-        $storage_path = getenv('storage_path') ?: (preg_replace('/src\\\\services$/', '', __DIR__) . 'storage');
+        if (!defined('__STORAGE_PATH__')) define('__STORAGE_PATH__', (preg_replace('/src\\\\services$/', '', __DIR__) . 'storage'));
+        $storage_path = __STORAGE_PATH__;
 
         if (strlen($path) === 0) return $storage_path;
 
@@ -267,40 +257,3 @@ class Helper {
         return $output;
     }
 }
-
-/* =====================================================================================================================================
- *	Funções de CHARSET para gravação e exibição em tela (UTF8)
-* =====================================================================================================================================
-*/
-
-// if (!function_exists('encodeTexto')){
-// 	function encodeTexto($texto){
-// 		return utf8_encode($texto);
-// 		return $texto;
-// 	}
-// }
-
-// if (!function_exists('decodeTexto')){
-// 	function decodeTexto($texto){
-// 		return utf8_decode($texto);
-// 		return $texto;
-// 	}
-// }
-
-// if (!function_exists('encodeTextoAjax')){
-// 	function encodeTextoAjax($texto){
-// 		return utf8_encode($texto);
-// 	}
-// }
-
-// if (!function_exists('decodeTextoAjax')){
-// 	function decodeTextoAjax($texto){
-// 		return utf8_decode($texto);
-// 	}
-// }
-
-// if (!function_exists('decodeTextoPDF')){
-// 	function decodeTextoPDF($texto){
-// 		return utf8_encode(utf8_decode($texto));
-// 	}
-// }
