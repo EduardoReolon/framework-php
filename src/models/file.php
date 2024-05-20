@@ -58,10 +58,6 @@ class File extends Entity {
      */
     public $deleted_at;
 
-    public static function pathResolve(string $caminho = '', string $nome_arquivo = '') {
-        return $caminho . '\\' . $nome_arquivo;
-    }
-
     public function moveToTrash() {
         if (!isset($this->file_name) || $this->deleted) {
             throw new Exception("Error moving to trash", 1);
@@ -71,7 +67,7 @@ class File extends Entity {
 
         Helper::pathExistsCreate(Helper::storagePath($newPath));
 
-        if (rename(Helper::storagePath(static::pathResolve($this->path, $this->file_name)), Helper::storagePath(static::pathResolve($newPath, $this->file_name)))) {
+        if (rename(Helper::storagePath($this->path . '/' . $this->file_name), Helper::storagePath($newPath . '/' . $this->file_name))) {
             $this->path = $newPath;
             $this->deleted = true;
             $this->deleted_at = new DateTime();
@@ -95,7 +91,7 @@ class File extends Entity {
         
         Helper::pathExistsCreate(Helper::storagePath($this->path));
 
-        $targetFile = Helper::storagePath(static::pathResolve($this->path, $this->file_name));
+        $targetFile = Helper::storagePath($this->path . '/' . $this->file_name);
 
         if (move_uploaded_file($file_request->tmp_name, $targetFile)) {
             $this->save();
@@ -107,6 +103,6 @@ class File extends Entity {
     public function url() {
         if (!isset($this->path) || !isset($this->file_name)) throw new Exception("Erro ao obter a rota", 1);
         
-        return 'storage.php?path=' . urlencode($this->path) . '&file=' . urlencode($this->file_name) . '&name=' . urlencode($this->name);
+        return 'storage?path=' . urlencode($this->path) . '&file=' . urlencode($this->file_name) . '&name=' . urlencode($this->name);
     }
 }

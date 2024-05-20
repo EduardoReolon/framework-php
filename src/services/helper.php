@@ -170,7 +170,7 @@ class Helper {
         $root = preg_replace('/(\/|\\\\)src(\/|\\\\)services$/', '', __DIR__);
 
         if (empty($path)) return $root;
-        return $root . '/' . preg_replace('/^(\\\|\\/)/', '', $path);
+        return preg_replace('/(\/|\\\)+/', '/', $root . '/' . $path);
     }
 
     public static function uriRoot(string $uri = '/'): string {
@@ -197,14 +197,12 @@ class Helper {
     }
 
     public static function storagePath(string $path = ''): string {
-        if (!defined('__STORAGE_PATH__')) define('__STORAGE_PATH__', (preg_replace('/src\\\\services$/', '', __DIR__) . 'storage'));
+        if (!defined('__STORAGE_PATH__')) define('__STORAGE_PATH__', Helper::appRootPath('storage'));
         $storage_path = __STORAGE_PATH__;
 
         if (strlen($path) === 0) return $storage_path;
 
-        if (preg_match('/^\\\/', $path)) return $storage_path . $path;
-
-        return $storage_path . '\\' . $path;
+        return preg_replace('/(\/|\\\)+/', '/', $storage_path . '/' . $path);
     }
 
     public static function pathExistsCreate(string $path) {
