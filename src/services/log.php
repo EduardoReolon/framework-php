@@ -60,17 +60,17 @@ Class Log {
     }
 
     public function setError($errno, $errstr, $errfile, $errline) {
-        $this->msg = '(type=' . $errno . ') ' . $errstr . " em " . $errfile . " na linha " . $errline;
+        $this->msg .= '(type=' . $errno . ') ' . $errstr . " em " . $errfile . " na linha " . $errline;
         return $this;
     }
 
     public function setException(Throwable $exception) {
-        $this->msg = $exception->getMessage() . " em " . $exception->getFile() . " na linha " . $exception->getLine();
+        $this->msg .= $exception->getMessage() . " em " . $exception->getFile() . " na linha " . $exception->getLine();
         return $this;
     }
 
     public function setThrowable(Throwable $throwable) {
-        $this->msg = $throwable->getMessage() . " em " . $throwable->getFile() . " na linha " . $throwable->getLine();
+        $this->msg .= $throwable->getMessage() . " em " . $throwable->getFile() . " na linha " . $throwable->getLine();
         return $this;
     }
 

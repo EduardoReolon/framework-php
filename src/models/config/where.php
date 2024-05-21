@@ -18,14 +18,14 @@ class Where {
 
     private function __construct() {}
 
-    static function clause(string $field, string $condition, $value, bool $insensitive_accent_case = false) {
+    static function clause(string $field, string $condition, $value = null, bool $insensitive_accent_case = false) {
         if (strcasecmp($condition ?: '', 'in') == 0 && !is_array($value)) throw new Exception("Esparado um array", 1);
         
         $where = new self();
 
         $where->field = $field;
         $where->condition = $condition;
-        $where->value = $value;
+        if ($value !== null) $where->value = $value;
         if ($insensitive_accent_case) $where->collate = ' COLLATE Latin1_general_CI_AI';
         return $where;
     }
@@ -79,13 +79,16 @@ class Where {
                         $params[$paramName] = $value;
                     }
                 }
+                if (count($inValues) === 0) return '';
                 return $str . '(' . implode(',', $inValues) . ')';
-            } else {
+            }
+            if (isset($this->value)) {
                 $paramName = $this->getParamName($params);
                 $params[$paramName] = $this->value;
 
                 return $str . ':' . $paramName . $this->collate;
             }
+            return $str;
         }
     }
 }

@@ -219,7 +219,8 @@ class Entity {
                 $where = Where::and();
                     
                 foreach ($conditions as $condition) {
-                    $where->add(Where::clause($condition[0], $condition[1], $condition[2]));
+                    if (count($condition) > 2) $where->add(Where::clause($condition[0], $condition[1], $condition[2]));
+                    else $where->add(Where::clause($condition[0], $condition[1]));
                 }
     
                 $query->where($where);
@@ -378,7 +379,12 @@ class Entity {
             } catch (\Throwable $th) {}
         }
 
-        $statement->execute();
+        try {
+            $statement->execute();
+        } catch (\Throwable $th) {
+            Log::new(Log::TYPE_ERROR)->setThrowable($th)->setMessage(" - Query: {$query}");
+            throw $th;
+        }
         $primaryNew = self::$db->lastInsertId();
 
         if (!empty($primaryNew)) {
