@@ -83,7 +83,7 @@ class File extends Entity {
         $match_ext = pathinfo($file_request->name, PATHINFO_EXTENSION);
         if (!$match_ext) throw new Exception("Error with file extention", 1);
         
-        $this->file_name = Helper::randomStr(time() . '-') . (is_array($match_ext) ? $match_ext['extension'] : $match_ext);
+        $this->file_name = Helper::randomStr(time() . '-') . '.' . (is_array($match_ext) ? $match_ext['extension'] : $match_ext);
         $this->name = $file_request->name;
         $this->size = $file_request->size;
         $this->mime = $file_request->type;
@@ -103,6 +103,6 @@ class File extends Entity {
     public function url() {
         if (!isset($this->path) || !isset($this->file_name)) throw new Exception("Erro ao obter a rota", 1);
         
-        return 'storage?path=' . urlencode($this->path) . '&file=' . urlencode($this->file_name) . '&name=' . urlencode($this->name);
+        return Helper::uriRoot('storage/' . urlencode($this->path) . '/' . urlencode($this->file_name) . '?name=' . urlencode($this->name));
     }
 }

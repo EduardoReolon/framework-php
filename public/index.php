@@ -9,11 +9,10 @@ if (Helper::uriRoot($uri) !== Helper::uriLogin()) {
     Auth::verificarAutenticacao();
 }
 
-if ($uri === 'storage') {
+if (preg_match('/^\/storage/', $uri)) {
     require_once __DIR__ . '/../src/services/storage.php';
     return;
 }
-
 
 if (Helper::uriRoot($uri) === Helper::uriLogin()) {
     new Login_view();

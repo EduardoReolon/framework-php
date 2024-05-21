@@ -1,23 +1,16 @@
 <?php
-require_once '../src/bootstrap.php';
-require_once __DIR__ . '/../src/models/arquivo.php';
-require_once __DIR__ . '/../src/services/helper.php';
+require_once __DIR__ . '/../models/arquivo.php';
+require_once __DIR__ . '/../services/helper.php';
 
-if (!key_exists('caminho', $_GET) || !key_exists('arquivo', $_GET)) {
-    header("HTTP/1.0 404 Not Found");
-    return;
-}
+$uri = Helper::getCurrentUri();
+preg_match('/\/?storage\/(.*?)\/([^\/]+)$/', $uri, $matches);
+$path = $matches[1];
+$file = $matches[2];
 
-$filePath = Helper::storagePath(Arquivo::pathResolve($_GET['caminho'], $_GET['arquivo']));
+$filePath = Helper::storagePath($path . '/' . $file);
 
-// em caso o usuário esteja tentando acessar algum arquivo fora da pasta storage
-if (preg_match('/\.{2,}/', $filePath)) {
-    header("HTTP/1.0 404 Not Found");
-    return;
-}
-
-$nome = $_GET['arquivo'];
-if (key_exists('nome', $_GET)) $nome = $_GET['nome'];
+$nome = $file;
+if (key_exists('name', $_GET)) $nome = $_GET['name'];
 
 // Verifica se o arquivo solicitado é válido
 if (file_exists($filePath)) {
