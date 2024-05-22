@@ -77,7 +77,7 @@ class Query {
         foreach ($params as $key => $param) {
             if ($param instanceof DateTime) {
                 $statement->bindValue(":{$key}", $param->format('Y-m-d H:i:s'));
-            } else $statement->bindValue(":{$key}", $param) . '<br>';
+            } else $statement->bindValue(":{$key}", $param);
         }
 
         $statement->execute();

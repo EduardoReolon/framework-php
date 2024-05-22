@@ -64,11 +64,12 @@ class Where {
         if (isset($this->group_clause)) {
             $statements = [];
             foreach ($this->clauses as $clause) {
-                $statements[] = $clause->getString($params);
+                $str = $clause->getString($params);
+                if (!empty($str)) $statements[] = $str;
             }
             return '(' . implode(' ' . $this->group_clause . ' ', $statements) . ')';
         } else {
-            $str = $this->field . ' ' . $this->condition . ' ';
+            $str = $this->field . ' ' . $this->condition;
             if (strcasecmp($this->condition ?: '', 'in') === 0) {
                 $inValues = [];
                 foreach ($this->value as $value) {
@@ -80,13 +81,13 @@ class Where {
                     }
                 }
                 if (count($inValues) === 0) return '';
-                return $str . '(' . implode(',', $inValues) . ')';
+                return $str . ' (' . implode(',', $inValues) . ')';
             }
             if (isset($this->value)) {
                 $paramName = $this->getParamName($params);
                 $params[$paramName] = $this->value;
 
-                return $str . ':' . $paramName . $this->collate;
+                return $str . ' :' . $paramName . $this->collate;
             }
             return $str;
         }
