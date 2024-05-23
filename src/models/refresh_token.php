@@ -3,7 +3,7 @@ require_once('config/entity.php');
 require_once('user.php');
 
 class Refresh_token extends Entity {
-    protected static $table = 'refresh_tokens';
+    protected static $table = 'refresh_token';
     protected $change_logs = false;
 
     /**

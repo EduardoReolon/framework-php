@@ -282,7 +282,7 @@ class Entity {
         foreach ($cols as $col) {
             $valueBefore = null;
             $property_name = $col->prop_name;
-            $value = Helper::castValue($this->$property_name, $col->type);
+            $value = isset($this->$property_name) ? Helper::castValue($this->$property_name, $col->type) : null;
 
             if (array_key_exists($property_name, $this->start_values)) {
                 if (!$col->primary && $value === $this->start_values[$property_name]) continue;

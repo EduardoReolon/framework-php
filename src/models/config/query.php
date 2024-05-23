@@ -62,7 +62,8 @@ class Query {
         $params = [];
         
         if (isset($this->where)) {
-            $query .= ' where ' . $this->where->getString($params);
+            $strWhere = $this->where->getString($params);
+            if (strlen($strWhere) > 2) $query .= ' where ' . $strWhere;
         }
 
         if ($this->rows_count === false) {
