@@ -21,6 +21,9 @@ class Http_response {
      * 204 No Content: Successful request (no content returned).
      */
     private int $status = 200;
+    private string $content_type = 'application/json';
+    private array $headers = [];
+    private bool $headers_sent = false;
     private string $location_user;
     private string $location;
     private mixed $body = '';
@@ -30,6 +33,13 @@ class Http_response {
     public function status(int $status) {
         $this->status = $status;
         return $this;
+    }
+    public function setContentType(string $content_type) {
+        $this->content_type = $content_type;
+        return $this;
+    }
+    public function setHeader(string $header) {
+        $this->headers[] = $header;
     }
     public function getStatus() {
         return $this->status;
@@ -49,23 +59,36 @@ class Http_response {
         return $this;
     }
 
-    public function __destruct() {
-        http_response_code($this->status);
+    public function sendHeaders() {
+        if ($this->headers_sent) return;
 
         if (isset($this->location)) return header("Location: " . $this->location);
         
-        header('Content-Type: application/json');
-
-        $response = [
-            'alerts' => $this->alerts,
-            'data' => $this->body,
-        ];
-        
-        if (isset($this->location_user)) {
-            $response['redirect'] = true;
-            $response['location'] = $this->location_user;
+        header("Content-Type: {$this->content_type}");
+        foreach ($this->headers as $header) {
+            header($header);
         }
 
-        echo json_encode($response);
+        $this->headers_sent = true;
+    }
+
+    public function __destruct() {
+        http_response_code($this->status);
+
+        $this->sendHeaders();
+
+        if ($this->content_type === 'application/json') {
+            $response = [
+                'alerts' => $this->alerts,
+                'data' => $this->body,
+            ];
+            
+            if (isset($this->location_user)) {
+                $response['redirect'] = true;
+                $response['location'] = $this->location_user;
+            }
+    
+            echo json_encode($response);
+        }
     }
 }

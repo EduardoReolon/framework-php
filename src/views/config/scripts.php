@@ -50,6 +50,7 @@
         if (formElement instanceof HTMLFormElement) {
             formData = new FormData(formElement);
             refreshPage = castValue(formElement.getAttribute('refresh-page'), false, true);
+            formElement.classList.add('form-disabled');
         }
 
         let return_value = null;
@@ -57,15 +58,42 @@
         // Exemplo de envio assíncrono dos dados usando fetch API
         fetch(formElement.action, {
             method: formElement.method,
-            body: formData,
+            body: formElement.method.match(/^get$/i) ? undefined : formData,
         })
         .then(async response => {
             if (response.ok && refreshPage) return location.reload();
 
+            if (formElement instanceof HTMLFormElement) formElement.classList.remove('form-disabled');
+
             let serverFailureAlert = !response.ok;
 
             const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
+            if (contentType && contentType.includes('application/xml')) {
+                // Extrai o nome do arquivo do cabeçalho Content-Disposition
+                const contentDisposition = response.headers.get('content-disposition');
+                const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                const filename = filenameMatch ? filenameMatch[1] : 'arquivo.xml';
+                
+                // Transforma a resposta em XML
+                response = await response.text();
+
+                // Cria um blob a partir do conteúdo XML
+                const blob = new Blob([response], { type: 'application/xml' });
+
+                // Cria uma URL temporária para o blob
+                const url = window.URL.createObjectURL(blob);
+
+                // Cria um link para download do arquivo
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+
+                // Clica no link para iniciar o download
+                link.click();
+
+                // Limpa a URL temporária
+                window.URL.revokeObjectURL(url);
+            } else if (contentType && contentType.includes('application/json')) {
                 response = await response.json();
 
                 if (response.redirect) {
@@ -101,7 +129,7 @@
     function setOnSubmitForms() {
         const forms = document.querySelectorAll('form');
         for (const form of forms) {
-            if (form.method === 'get') continue;
+            // if (form.method === 'get') continue;
             if (!form.action.match(/\/api\//i)) continue;
             form.addEventListener('submit', (event) => sendForm(event.target));
         }
