@@ -200,6 +200,7 @@ class Entity {
         try {
             $query = Static::query();
             $query->where(Where::clause($field, '=', $value));
+
             $entities = Static::fetch($query);
             if (empty($entities)) return null;
             return $entities[0];
@@ -227,6 +228,7 @@ class Entity {
             }
             return Static::fetch($query);
         } catch (\Throwable $th) {
+            Log::new(Log::TYPE_ERROR)->setThrowable($th);
             return [];
         }
     }
@@ -382,7 +384,14 @@ class Entity {
         try {
             $statement->execute();
         } catch (\Throwable $th) {
-            Log::new(Log::TYPE_ERROR)->setThrowable($th)->setMessage(" - Query: {$query}");
+            $params = [];
+            if (__ENV__ === 'dev') {
+                foreach ($keysValues as $keyValue) {
+                    $params[$keyValue->col->col_name] = $keyValue->value;
+                }
+            }
+            $params = json_encode($params);
+            Log::new(Log::TYPE_ERROR)->setThrowable($th)->setMessage(" - Query: {$query} - Values: {$params}");
             throw $th;
         }
         $primaryNew = self::$db->lastInsertId();
