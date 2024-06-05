@@ -51,6 +51,7 @@ class Query {
     
     public function execQuery($db): array {
         $query = "SELECT ";
+
         if ($this->rows_count) $query .= 'COUNT(*) as rows_count';
         else if (!empty($this->selects)) {
             $query .= implode(', ', $this->selects);
@@ -60,7 +61,7 @@ class Query {
         $query .= " FROM " . $this->table . implode('', $this->joins);
         
         $params = [];
-        
+
         if (isset($this->where)) {
             $strWhere = $this->where->getString($params);
             if (strlen($strWhere) > 2) $query .= ' where ' . $strWhere;
@@ -74,13 +75,13 @@ class Query {
                 $query .= ' OFFSET ' . ($this->page - 1) * $this->per_page . ' ROWS FETCH NEXT ' . $this->per_page . ' ROWS ONLY';
             }
         }
+
         $statement = $db->prepare($query);
         foreach ($params as $key => $param) {
             if ($param instanceof DateTime) {
                 $statement->bindValue(":{$key}", $param->format('Y-m-d H:i:s'));
             } else $statement->bindValue(":{$key}", $param);
         }
-
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -104,5 +105,6 @@ class Query {
     /** @param Where */
     public function where($where) {
         $this->where = $where;
+        return $this;
     }
 }
