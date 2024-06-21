@@ -65,7 +65,7 @@ class Where {
             $statements = [];
             foreach ($this->clauses as $clause) {
                 $str = $clause->getString($params);
-                if (!empty($str)) $statements[] = $str;
+                if (!empty($str) && !preg_match('/^\(+\)+$/', $str)) $statements[] = $str;
             }
             return '(' . implode(' ' . $this->group_clause . ' ', $statements) . ')';
         } else {
