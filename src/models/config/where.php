@@ -19,7 +19,7 @@ class Where {
     private function __construct() {}
 
     static function clause(string $field, string $condition, $value = null, bool $insensitive_accent_case = false) {
-        if (strcasecmp($condition ?: '', 'in') == 0 && !is_array($value)) throw new Exception("Esparado um array", 1);
+        if (preg_match('/^(in|not in)$/i', $condition) && !is_array($value)) throw new Exception("Esparado um array", 1);
         
         $where = new self();
 
@@ -70,11 +70,12 @@ class Where {
             return '(' . implode(' ' . $this->group_clause . ' ', $statements) . ')';
         } else {
             $str = $this->field . ' ' . $this->condition;
-            if (strcasecmp($this->condition ?: '', 'in') === 0) {
+            if (preg_match('/^(in|not in)$/i', $this->condition)) {
                 $inValues = [];
                 foreach ($this->value as $value) {
                     if (gettype($value) === 'integer' || gettype($value) === 'double') $inValues[] = $value;
                     else {
+                        if ($value === null) continue;
                         $paramName = $this->getParamName($params);
                         $inValues[] = ':' . $paramName;
                         $params[$paramName] = $value;

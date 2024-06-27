@@ -40,6 +40,41 @@
     }
 
     /**
+     * functions for tab views
+     */
+    function setHash(level = 0, value, onlyIfEmpty = false) {
+        const activeTabHash = window.location.hash.substring(1); // Remove o '#' do hash
+
+        const levels = activeTabHash.split('-');
+        if (onlyIfEmpty) {
+            if (!levels[level]) levels[level] = value;
+        } else levels[level] = value;
+
+        // window.location.hash = levels.join('-');
+        history.replaceState(null, null, '#' + levels.join('-'));
+    }
+    function getHash() {
+        return window.location.hash.substring(1).split('-');
+    }
+    function showTab(containerId, tabId) {
+        const elements = document.querySelectorAll(`#${containerId}>.tab-pane`);
+        for (let index = 0; index < elements.length; index++) {
+            if (elements[index].id === `${tabId}-tab-pane`) {
+                elements[index].classList.add('show');
+                elements[index].classList.add('active');
+            } else {
+                elements[index].classList.remove('show');
+                elements[index].classList.remove('active');
+            }
+        }
+        const btn = document.getElementById(`${tabId}-tab`);
+        if (btn) btn.classList.add('active');
+        let level = 0;
+        if (containerId === 'Content-membros') level = 1;
+        setHash(level, tabId);
+    }
+
+    /**
      * @param {HTMLFormElement|{action: string, method: 'post'|'get'|'patch'}} formElement
      * @param {FormData} formData ignorado se formElement for instancia de HTMLFormElement
      * @param {bool} refreshPage ignorado se formElement for instancia de HTMLFormElement

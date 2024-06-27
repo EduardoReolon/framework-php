@@ -394,10 +394,13 @@ class Entity {
             Log::new(Log::TYPE_ERROR)->setThrowable($th)->setMessage(" - Query: {$query} - Values: {$params}");
             throw $th;
         }
-        $primaryNew = self::$db->lastInsertId();
 
-        if (!empty($primaryNew)) {
-            $this->$primaryKeyPropName = Helper::castValue($primaryNew, $primaryKeyType);
+        if ($toInsert) {
+            $primaryNew = self::$db->lastInsertId();
+    
+            if (!empty($primaryNew)) {
+                $this->$primaryKeyPropName = Helper::castValue($primaryNew, $primaryKeyType);
+            }
         }
         $this->isLocal = false;
         
