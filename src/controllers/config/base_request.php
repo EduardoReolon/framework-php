@@ -51,7 +51,7 @@ class Property {
             } elseif (preg_match('/ceiling/i', $chave)) {
                 $this->ceiling = (int) $valor;
             } elseif (preg_match('/mimes/i', $chave)) {
-                $this->mimes = explode('/(\s*\|\s*)|(\s+)|(\s*,\s*)/', $valor);
+                $this->mimes = preg_split('/(\s*\|\s*)|(\s+)|(\s*,\s*)/', $valor);
             } elseif (preg_match('/file_max_size/i', $chave)) {
                 $this->file_max_size = Helper::strToFileSize($valor);
             } elseif (preg_match('/file_min_size/i', $chave)) {

@@ -28,6 +28,62 @@
         handleCB();
     }
 
+    /**
+     * set drop area functions
+     */
+    function setDropArea(dropAreaId = 'drop-area', fileListId = 'file-list') {
+        const dropArea = document.getElementById(dropAreaId);
+        const fileList = document.getElementById(fileListId);
+        
+        const fileUpload = dropArea.querySelector('input[type="file"]');
+
+        dropArea.addEventListener('click', () => {
+            fileUpload.click();
+        });
+
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea.classList.add('active');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('active');
+        });
+
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea.classList.remove('active');
+            
+            const files = event.dataTransfer.files;
+            handleFiles(files);
+            
+            fileUpload.files = files;
+        });
+
+        document.getElementById('file-upload').addEventListener('change', (event) => {
+            const files = event.target.files;
+            handleFiles(files);
+        });
+
+        function handleFiles(files) {
+            fileList.innerHTML = ''; // Limpa a lista de arquivos anteriormente exibidos
+
+            for (const file of files) {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${file.name} (${formatBytes(file.size)})`;
+                fileList.appendChild(listItem);
+            }
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    }
+
     /** @param {string|null} value */
     function castValue(value, valueIfNull = null, valueIfEmpty = '') {
         if (value === null) return valueIfNull;

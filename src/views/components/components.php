@@ -76,4 +76,21 @@ class Components {
             <script>multiSelectEvents("<?php echo $index?>", "<?php echo $default_value?>", "<?php echo $separator?>")</script>
         <?php
     }
+
+    static function dropFileArea(string $name = 'files[]') {
+        ?>
+            <div class="drop-area" id="drop-area">
+                Arraste e solte arquivos aqui ou clique para selecionar
+                <input type="file" id="file-upload" name="<?php echo $name ?>" multiple style="display: none;">
+            </div>
+
+            <div class="file-list">
+                <ul id="file-list"></ul>
+            </div>
+
+            <script>
+                setDropArea(dropAreaId = 'drop-area', fileListId = 'file-list');
+            </script>
+        <?php
+    }
 }
