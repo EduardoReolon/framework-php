@@ -208,6 +208,7 @@
         .catch(error => {
             // Lidar com erros de requisição, como falha na conexão, etc.
             console.log(error);
+            if (formElement instanceof HTMLFormElement) formElement.classList.remove('form-disabled');
             sendAlert('warning', 'Falha na página, ao salvar as alterações!');
         });
 
