@@ -40,9 +40,7 @@ class View_core {
     }
 
     protected function footer() {
-        ?>
-            <script>setOnSubmitForms()</script>
-        <?php
+        ?><?php
     }
 
     public function __construct() {

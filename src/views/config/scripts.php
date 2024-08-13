@@ -1,4 +1,9 @@
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        setOnSubmitForms();
+        addHashToHrefs();
+    });
+
     function multiSelectEvents(index, default_value = '', separator = ', ') {
         const chBoxes = 
             document.querySelectorAll(`.dropdown-menu.index-multiselect-${index} input[type="checkbox"]`); 
@@ -128,6 +133,23 @@
         let level = 0;
         if (containerId === 'Content-membros') level = 1;
         setHash(level, tabId);
+    }
+    function addHashToHrefs() {
+        document.querySelectorAll('a[add-hash]').forEach(link => {
+            link.addEventListener('click', function(event) {
+                // Obtém a hash atual da URL
+                const currentHash = window.location.hash;
+
+                // Obtém o href do link clicado
+                const originalHref = this.getAttribute('href');
+
+                // Atualiza o href do link com a hash atual
+                const newHref = originalHref + currentHash;
+
+                // Atualiza o href do link
+                this.setAttribute('href', newHref);
+            });
+        });
     }
 
     /**
