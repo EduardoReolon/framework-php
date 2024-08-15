@@ -139,6 +139,22 @@ class Helper {
         return true;
     }
 
+    public static function compareDateTimes(?Datetime $date1, ?DateTime $date2): int {
+        if ($date1 === null && $date2 === null) {
+            return 0; // Ambas são null, então são consideradas iguais
+        } elseif ($date1 === null) {
+            return -1; // $date1 é null e $date2 não é, então $date1 é considerado menor
+        } elseif ($date2 === null) {
+            return 1; // $date2 é null e $date1 não é, então $date1 é considerado maior
+        } elseif ($date1 < $date2) {
+            return -1; // $date1 é anterior a $date2
+        } elseif ($date1 > $date2) {
+            return 1; // $date1 é posterior a $date2
+        } else {
+            return 0; // $date1 é igual a $date2
+        }
+    }
+
     /**
      * @param string[] $patterns
      */
