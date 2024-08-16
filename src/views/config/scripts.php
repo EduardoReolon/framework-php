@@ -174,8 +174,6 @@
             body: formElement.method.match(/^get$/i) ? undefined : formData,
         })
         .then(async response => {
-            if (response.ok && refreshPage) return location.reload();
-
             if (formElement instanceof HTMLFormElement) formElement.classList.remove('form-disabled');
 
             let serverFailureAlert = !response.ok;
@@ -222,6 +220,7 @@
 
                 return_value = response;
             }
+            if (response.ok && refreshPage) return location.reload();
 
             if (serverFailureAlert) {
                 sendAlert('warning', 'Falha no servidor!');
