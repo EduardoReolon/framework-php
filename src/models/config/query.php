@@ -27,6 +27,7 @@ class Query {
     private $page;
     /** @var int */
     private $per_page;
+    private array $params = [];
 
     /** @param Entity $model */
     public function __construct(string $table){
@@ -49,7 +50,7 @@ class Query {
         $this->addJoin('inner', $table_target, $leftJoin, $rightJoin);
     }
     
-    public function execQuery($db): array {
+    public function getQuery() {
         $query = "SELECT ";
 
         if ($this->rows_count) $query .= 'COUNT(*) as rows_count';
@@ -60,10 +61,10 @@ class Query {
         }
         $query .= " FROM " . $this->table . implode('', $this->joins);
         
-        $params = [];
+        $this->params = [];
 
         if (isset($this->where)) {
-            $strWhere = $this->where->getString($params);
+            $strWhere = $this->where->getString($this->params);
             if (strlen($strWhere) > 2) $query .= ' where ' . $strWhere;
         }
 
@@ -76,8 +77,12 @@ class Query {
             }
         }
 
-        $statement = $db->prepare($query);
-        foreach ($params as $key => $param) {
+        return $query;
+    }
+    
+    public function execQuery($db): array {
+        $statement = $db->prepare($this->getQuery());
+        foreach ($this->params as $key => $param) {
             if ($param instanceof DateTime) {
                 $statement->bindValue(":{$key}", $param->format('Y-m-d H:i:s'));
             } else $statement->bindValue(":{$key}", $param);
