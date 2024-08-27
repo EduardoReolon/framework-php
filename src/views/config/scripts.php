@@ -220,7 +220,7 @@
 
                 return_value = response;
             }
-            if (response.ok && refreshPage) return location.reload();
+            if (!serverFailureAlert && refreshPage) return location.reload();
 
             if (serverFailureAlert) {
                 sendAlert('warning', 'Falha no servidor!');
