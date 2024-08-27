@@ -66,7 +66,7 @@ class Helper {
      * @param string $type string|int|float|bool
      */
     public static function castValue($value, string $type) {
-        if ($value === 'null') $value = null;
+        if (strcasecmp($value, 'null') === 0) $value = null;
         if ($type === 'bool' || $type === 'boolean') {
             if (is_string($value)) {
                 if (empty($value)) return false;
