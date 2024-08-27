@@ -295,7 +295,7 @@ class Entity {
                 $valueBefore = $this->start_values[$property_name];
             } else if (!$col->primary && !isset($value)) continue;
 
-            if ($col->json) $value = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            if ($col->json && $value !== null) $value = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
             $keysValues[] = new KeyValue($col, $value);
             if (!$col->primary && !$col->skip_log) {
