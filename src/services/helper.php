@@ -67,7 +67,7 @@ class Helper {
      */
     public static function castValue($value, string $type) {
         if ($value === null) return $value;
-        if (strcasecmp($value, 'null') === 0) return null;
+        if (is_string($value) && strcasecmp($value, 'null') === 0) return null;
         if ($type === 'bool' || $type === 'boolean') {
             if (is_string($value)) {
                 if (empty($value)) return false;
