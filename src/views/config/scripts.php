@@ -177,7 +177,7 @@
             if (formElement instanceof HTMLFormElement) formElement.classList.remove('form-disabled');
 
             let serverFailureAlert = !response.ok;
-
+            
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/xml')) {
                 // Extrai o nome do arquivo do cabeçalho Content-Disposition
@@ -186,10 +186,10 @@
                 const filename = filenameMatch ? filenameMatch[1] : 'arquivo.xml';
                 
                 // Transforma a resposta em XML
-                response = await response.text();
+                const content = await response.text();
 
                 // Cria um blob a partir do conteúdo XML
-                const blob = new Blob([response], { type: 'application/xml' });
+                const blob = new Blob([content], { type: 'application/xml' });
 
                 // Cria uma URL temporária para o blob
                 const url = window.URL.createObjectURL(blob);
@@ -205,22 +205,22 @@
                 // Limpa a URL temporária
                 window.URL.revokeObjectURL(url);
             } else if (contentType && contentType.includes('application/json')) {
-                response = await response.json();
+                responseJson = await response.json();
 
-                if (response.redirect) {
-                    window.location.href = response.location;
+                if (responseJson.redirect) {
+                    window.location.href = responseJson.location;
                 }
 
-                if (Array.isArray(response.alerts)) {
-                    for (const alert of response.alerts) {
+                if (Array.isArray(responseJson.alerts)) {
+                    for (const alert of responseJson.alerts) {
                         sendAlert(alert.type, alert.msg, alert.time);
                         serverFailureAlert = false;
                     }
                 }
 
-                return_value = response;
+                return_value = responseJson;
             }
-            if (!serverFailureAlert && refreshPage) return location.reload();
+            if (response.ok && refreshPage) return location.reload();
 
             if (serverFailureAlert) {
                 sendAlert('warning', 'Falha no servidor!');
