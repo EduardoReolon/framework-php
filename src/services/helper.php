@@ -66,7 +66,8 @@ class Helper {
      * @param string $type string|int|float|bool
      */
     public static function castValue($value, string $type) {
-        if (strcasecmp($value, 'null') === 0) $value = null;
+        if ($value === null) return $value;
+        if (strcasecmp($value, 'null') === 0) return null;
         if ($type === 'bool' || $type === 'boolean') {
             if (is_string($value)) {
                 if (empty($value)) return false;
@@ -76,7 +77,6 @@ class Helper {
             }
             return (bool) $value;
         }
-        if ($value === null) return $value;
         if ($type === 'int') return (int) $value;
         if ($type === 'float') return (float) $value;
         if ($type === 'datetime' || $type === 'DateTime') {
