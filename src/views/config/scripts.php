@@ -182,8 +182,8 @@
             if (contentType && contentType.includes('application/xml')) {
                 // Extrai o nome do arquivo do cabeçalho Content-Disposition
                 const contentDisposition = response.headers.get('content-disposition');
-                const filenameMatch = contentDisposition.match(/filename="(.+)"/);
-                const filename = filenameMatch ? filenameMatch[1] : 'arquivo.xml';
+                const filenameMatch = contentDisposition.match(/filename\*?=(UTF-8\'\'|")([^"]+)"?/);
+                const filename = filenameMatch ? decodeURIComponent(filenameMatch[2]) : 'arquivo.xml';
                 
                 // Transforma a resposta em XML
                 const content = await response.text();
