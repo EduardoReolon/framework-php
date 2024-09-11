@@ -346,11 +346,11 @@ class Entity {
         $method = '';
 
         if ($toInsert) {
+            $method = 'insert';
             if (empty($keysArray)) {
                 $query = "INSERT INTO " . static::$table . " default values";
             } else {
                 $query = "INSERT INTO " . static::$table . " (";
-                $method = 'insert';
     
                 $query .= implode(', ', $keysArray);
                 $query .= ") VALUES (";
@@ -360,8 +360,8 @@ class Entity {
                 $query .= ")";
             }
         } else {
-            $query = "UPDATE " . static::$table . " SET ";
             $method = 'update';
+            $query = "UPDATE " . static::$table . " SET ";
 
             $query .= implode(', ', array_map(function ($key) {
                 return "{$key} = :{$key}";
