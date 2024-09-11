@@ -12,6 +12,7 @@ class Auth {
     private static $user_id;
     /** @var User $user */
     private static $user;
+    private static string $uniqueLogonId;
 
     public static function hasRole($role, $throwError = false) {
         $found = in_array($role, self::$roles);
@@ -21,6 +22,11 @@ class Auth {
         }
 
         return $found;
+    }
+
+    public static function uniqueLogonId() {
+        if (!isset(self::$uniqueLogonId)) self::$uniqueLogonId = Helper::randomStr(length: 12);
+        return self::$uniqueLogonId;
     }
 
     public static function getFirstRoleNoAdmin(): string {

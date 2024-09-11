@@ -14,6 +14,9 @@ Class Log {
     private $type;
     private $msg = '';
     private $path;
+    private ?string $tableName;
+    private mixed $primary;
+    private ?string $method;
 
     private function __construct() {}
 
@@ -42,15 +45,18 @@ Class Log {
     }
 
     public function setTableName(string $tableName) {
-        $this->msg = $tableName;
+        $this->tableName = $tableName;
         return $this;
     }
+    public function setPrimary(mixed $value) {
+        $this->primary = $value;
+    }
     public function setMethod(string $method) {
-        $this->msg .= '(' . $method . ')';
+        $this->method = $method;
         return $this;
     }
     public function setValueChanged(string $value) {
-        $this->msg .= ': ' . $value;
+        $this->msg = $value;
         return $this;
     }
 
@@ -83,15 +89,20 @@ Class Log {
         $brasilTimeZone = new DateTimeZone('America/Sao_Paulo');
         $now->setTimezone($brasilTimeZone);
 
-        $msg = $now->format('Y-m-d H:i:s') . ' - ' . (Auth::getUserId() ?: 0);
-        $msg .= ' - ' . str_replace(["\r", "\n", "\r\n"], ' ', $this->msg);
-        $msg .= "\n";
+        $msg = $now->format('Y-m-d H:i:s') . ' | ' .
+            Auth::uniqueLogonId() . ' | ' .
+            (Auth::getUserId() ?: 0) . ' | ';
+        if (isset($this->method)) $msg .= $this->method . ' | ';
+        if (isset($this->primary)) $msg .= $this->primary . ' | ';
+        $msg .= str_replace(["\r", "\n", "\r\n"], ' ', $this->msg) . "\n";
 
         $log_file = $this->path . '/' . $now->format('Y');
         if (!is_dir($log_file)) {
             mkdir($log_file, 0777, true);
         }
-        $log_file .=  '/' . $now->format('M') . '.txt';
+        $log_file .=  '/' . $now->format('m');
+        if (isset($this->tableName)) $log_file .= '-' . $this->tableName;
+        $log_file .=  '.txt';
 
         error_log($msg, 3, $log_file);
     }

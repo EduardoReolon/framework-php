@@ -406,6 +406,7 @@ class Entity {
         
         if ($this->change_logs) {
             $log = Log::new(Log::TYPE_CHANGE)->setTableName(static::$table)->setMethod($method);
+            $log->setPrimary($this->$primaryKeyPropName);
             self::$logs[] = $log;
             $this->log['primary'] = $this->$primaryKeyPropName;
             $log->setValueChanged(json_encode($this->log, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
@@ -445,6 +446,7 @@ class Entity {
 
         if ($this->change_logs) {
             $log = Log::new(Log::TYPE_CHANGE)->setTableName(static::$table)->setMethod('delete');
+            $log->setPrimary($this->$primaryKeyPropName);
             self::$logs[] = $log;
             $log->setValueChanged(json_encode([
                 'primary'=>$this->$primaryKeyPropName,
