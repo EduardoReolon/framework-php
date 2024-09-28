@@ -437,7 +437,7 @@ class Entity {
             }
         }
 
-        $query = "DELETE " . static::$table . " WHERE {$primaryKeyDB} = :{$primaryKeyDB}";
+        $query = "DELETE FROM " . static::$table . " WHERE {$primaryKeyDB} = :{$primaryKeyDB}";
 
         $statement = self::$db->prepare($query);
         $statement->bindParam(":{$primaryKeyDB}", $primaryValue);

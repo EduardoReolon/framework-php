@@ -1,10 +1,9 @@
 <?php
-require_once __DIR__ . '/../../vendor/php-jwt/src/JWT.php';
-
 require_once __DIR__ . '/../models/user.php';
 require_once __DIR__ . '/../models/refresh_token.php';
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 class Auth {
     private static $roles = [];
@@ -61,7 +60,7 @@ class Auth {
     
     private static function token_get_data(string $token) {
         try {
-            return JWT::decode($token, __JWT_SECRET__, ['HS256']);
+            return JWT::decode($token, new Key(__JWT_SECRET__, 'HS256'));
         } catch (\Throwable $th) {
             //throw $th;
             return false;
