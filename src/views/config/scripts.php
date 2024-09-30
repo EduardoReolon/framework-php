@@ -36,7 +36,7 @@
     /**
      * set drop area functions
      */
-    function setDropArea(dropAreaId = 'drop-area', fileListId = 'file-list') {
+    function setDropArea(dropAreaId = 'drop-area', fileListId = 'file-list', buttonIdClick = '') {
         const dropArea = document.getElementById(dropAreaId);
         const fileList = document.getElementById(fileListId);
         
@@ -65,7 +65,7 @@
             fileUpload.files = files;
         });
 
-        document.getElementById('file-upload').addEventListener('change', (event) => {
+        dropArea.querySelector('#file-upload').addEventListener('change', (event) => {
             const files = event.target.files;
             handleFiles(files);
         });
@@ -78,6 +78,9 @@
                 listItem.textContent = `${file.name} (${formatBytes(file.size)})`;
                 fileList.appendChild(listItem);
             }
+
+            const button = document.getElementById(buttonIdClick);
+            if (button) button.click();
         }
 
         function formatBytes(bytes) {
