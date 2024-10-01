@@ -60,9 +60,10 @@
             dropArea.classList.remove('active');
             
             const files = event.dataTransfer.files;
-            handleFiles(files);
-            
+
             fileUpload.files = files;
+
+            handleFiles(files);
         });
 
         dropArea.querySelector('#file-upload').addEventListener('change', (event) => {
