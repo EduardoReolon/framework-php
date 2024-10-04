@@ -215,6 +215,8 @@
                     window.location.href = responseJson.location;
                 }
 
+                if (responseJson.refreshPage) refreshPage = true;
+
                 if (Array.isArray(responseJson.alerts)) {
                     for (const alert of responseJson.alerts) {
                         sendAlert(alert.type, alert.msg, alert.time);
