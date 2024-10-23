@@ -19,7 +19,7 @@ class Query {
     private $where;
 
     /** @var string[] */
-    private $order_by = [];
+    private $orderBy = [];
 
     /** @var bool */
     private $paged = false;
@@ -69,7 +69,7 @@ class Query {
         }
 
         if ($this->rows_count === false) {
-            if (!empty($this->order_by)) $query .= ' ORDER BY ' . implode(',', $this->order_by);
+            if (!empty($this->orderBy)) $query .= ' ORDER BY ' . implode(',', $this->orderBy);
 
             if ($this->paged) {
                 // ORDER BY id OFFSET 10 ROWS FETCH NEXT 10 ROWS ONLY;
@@ -91,14 +91,14 @@ class Query {
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function order_by(string $field, string $direction = 'ASC') {
+    public function orderBy(string $field, string $direction = 'ASC') {
         if (empty($field)) throw new Exception("Necessário informar o campo a ser ordenado", 1);
-        if (empty($direction) || strcasecmp($direction, 'ASC') === 0) $this->order_by[] = $field;
-        else if (strcasecmp($direction ?: '', 'DESC') === 0) $this->order_by[] = $field . ' DESC';
+        if (empty($direction) || strcasecmp($direction, 'ASC') === 0) $this->orderBy[] = $field;
+        else if (strcasecmp($direction ?: '', 'DESC') === 0) $this->orderBy[] = $field . ' DESC';
         else throw new Exception("Direção de ordenação incorreta: " . $direction, 1);
     }
     public function ordered(): bool {
-        return !empty($this->order_by);
+        return !empty($this->orderBy);
     }
 
     public function paged(int $page, int $per_page) {
