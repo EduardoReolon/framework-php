@@ -81,7 +81,13 @@ class Where {
                         $params[$paramName] = $value;
                     }
                 }
-                if (count($inValues) === 0) return '';
+                
+                // if (count($inValues) === 0) return '';
+                // ⚠️ Lista vazia? Gerar cláusula que nunca retorna resultado (ou sempre retorna no caso do NOT IN)
+                if (count($inValues) === 0) {
+                    return $condition === 'in' ? '1=0' : '1=1';
+                }
+
                 return $str . ' (' . implode(',', $inValues) . ')';
             }
             if (isset($this->value)) {
