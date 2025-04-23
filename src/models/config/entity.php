@@ -180,7 +180,7 @@ class Entity {
                     break;
                 }
             }
-            $query->order_by($primary);
+            $query->orderBy($primary);
         }
 
         $query->paged($page, $per_page);

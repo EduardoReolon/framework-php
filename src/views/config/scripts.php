@@ -36,7 +36,7 @@
     /**
      * set drop area functions
      */
-    function setDropArea(dropAreaId = 'drop-area', fileListId = 'file-list') {
+    function setDropArea(dropAreaId = 'drop-area', fileListId = 'file-list', buttonIdClick = '') {
         const dropArea = document.getElementById(dropAreaId);
         const fileList = document.getElementById(fileListId);
         
@@ -60,12 +60,13 @@
             dropArea.classList.remove('active');
             
             const files = event.dataTransfer.files;
-            handleFiles(files);
-            
+
             fileUpload.files = files;
+
+            handleFiles(files);
         });
 
-        document.getElementById('file-upload').addEventListener('change', (event) => {
+        dropArea.querySelector('#file-upload').addEventListener('change', (event) => {
             const files = event.target.files;
             handleFiles(files);
         });
@@ -78,6 +79,9 @@
                 listItem.textContent = `${file.name} (${formatBytes(file.size)})`;
                 fileList.appendChild(listItem);
             }
+
+            const button = document.getElementById(buttonIdClick);
+            if (button) button.click();
         }
 
         function formatBytes(bytes) {
@@ -210,6 +214,8 @@
                 if (responseJson.redirect) {
                     window.location.href = responseJson.location;
                 }
+
+                if (responseJson.refreshPage) refreshPage = true;
 
                 if (Array.isArray(responseJson.alerts)) {
                     for (const alert of responseJson.alerts) {
